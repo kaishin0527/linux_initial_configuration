@@ -1,6 +1,5 @@
-
-
 # users generic .zshrc file for zsh(1)
+# Modified to remove marker and ghq dependencies
 
 ## Environment variable configuration
 #
@@ -28,7 +27,7 @@ case ${UID} in
     ;;
 *)
     PROMPT="%{${fg[red]}%}%/%%%{${reset_color}%} "
-    PROMPT2="%B%{${fg[red]}%}%_%%%{${reset_color}%}%b "
+    PROMPT2="%{${fg[red]}%}%_%%%{${reset_color}%} "
     SPROMPT="%B%{${fg[red]}%}%r is correct? [n,y,a,e]:%{${reset_color}%} "
     [ -n "${REMOTEHOST}${SSH_CONNECTION}" ] &&
         PROMPT="%{${fg[cyan]}%}$(echo ${HOST%%.*} | tr '[a-z]' '[A-Z]') ${PROMPT}"
@@ -178,12 +177,12 @@ kterm)
 cons25)
     unset LANG
     export LSCOLORS=ExFxCxdxBxegedabagacad
-    export LS_COLORS='di=01;34:ln=01;35;so=01;32:ex=01;31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
+    export LS_COLORS='di=01;34:ln=01;35:so=01;32:ex=01;31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
     zstyle ':completion:*' list-colors 'di=;34;1' 'ln=;35;1' 'so=;32;1' 'ex=31;1' 'bd=46;34' 'cd=43;34'
     ;;
 jfbterm-color)
     export LSCOLORS=gxFxCxdxBxegedabagacad
-    export LS_COLORS='di=01;36:ln=01;35:so=01;32:ex=01;31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
+    export LS_COLORS='di=01;36:ln=01;35;so=01;32;ex=01;31;bd=46;34;cd=43;34;su=41;30;sg=46;30;tw=42;30;ow=43;30'
     zstyle ':completion:*' list-colors 'di=;36;1' 'ln=;35;1' 'so=;32;1' 'ex=31;1' 'bd=46;34' 'cd=43;34'
     ;;
 esac
@@ -336,6 +335,8 @@ function iapt() {
 }
 
 
+
+
 function pe() {
   ag "$@" . | peco --exec 'awk -F : '"'"'{print "+" $2 " " $1}'"'"' | xargs less -N '
 }
@@ -358,14 +359,4 @@ bindkey '^t' peco-select-directory
 
 function chpwd() { ls -l }
 
-# Oh My Zsh configuration
-export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME="powerlevel10k/powerlevel10k"
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-completions)
-
-# Source Oh My Zsh
-source $ZSH/oh-my-zsh.sh
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 

@@ -2,19 +2,18 @@
 #!/bin/bash
 
 # Linux Initial Configuration Setup Script
-# This script sets up a new Linux environment with zsh, peco, autojump, and custom configuration
+# This script checks for required tools and sets up zsh configuration
 
 set -e
-set -u
 
-# Colors for output
+# Color codes for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Function to print colored output
+# Print functions
 print_status() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
@@ -31,44 +30,31 @@ print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
-# Function to check if command exists
+# Check if command exists
 command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
-# Function to install package if not exists
-install_package() {
-    if ! command_exists "$1"; then
-        print_status "Installing $1..."
+# Function to check if a package is installed
+is_package_installed() {
+    dpkg -l "$1" >/dev/null 2>&1
+}
+
+# Function to install package if not installed
+ensure_package() {
+    local package=$1
+    if ! is_package_installed "$package"; then
+        print_status "Installing $package..."
         sudo apt-get update
-        sudo apt-get install -y "$1"
-        print_success "$1 installed successfully"
+        sudo apt-get install -y "$package"
+        print_success "$package installed successfully"
     else
-        print_success "$1 is already installed"
+        print_success "$package is already installed"
     fi
 }
 
-# Main setup function
-main() {
-    print_status "Starting Linux Initial Configuration Setup..."
-    
-    # Check if running on Ubuntu/Debian-based system
-    if ! command_exists apt-get; then
-        print_error "This script is designed for Ubuntu/Debian-based systems"
-        exit 1
-    fi
-    
-    # Update package list
-    print_status "Updating package list..."
-    sudo apt-get update
-    
-    # Install essential packages
-    print_status "Installing essential packages..."
-    for package in zsh curl wget git build-essential autojump peco silversearcher-ag less vim tmux htop tree unzip tar gzip ripgrep; do
-        install_package "$package"
-    done
-    
-    # Install Oh My Zsh if not installed
+# Function to install Oh My Zsh if not installed
+install_oh_my_zsh() {
     if [ ! -d "$HOME/.oh-my-zsh" ]; then
         print_status "Installing Oh My Zsh..."
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
@@ -76,34 +62,129 @@ main() {
     else
         print_success "Oh My Zsh is already installed"
     fi
-    
-    # Install zsh plugins
-    print_status "Installing zsh plugins..."
-    
-    # Install zsh-autosuggestions
-    if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]; then
-        git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-    fi
-    
-    # Install zsh-syntax-highlighting
-    if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" ]; then
-        git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-    fi
-    
-    # Install zsh-completions
-    if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-completions" ]; then
-        git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-completions
-    fi
-    
-    # Install powerlevel10k theme
-    if [ ! -d "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" ]; then
+}
+
+# Function to install Powerlevel10k theme
+install_powerlevel10k() {
+    if [ ! -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k" ]; then
+        print_status "Installing Powerlevel10k theme..."
         git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k
+        print_success "Powerlevel10k theme installed successfully"
+    else
+        print_success "Powerlevel10k theme is already installed"
     fi
+}
+
+# Function to install autojump if not installed
+install_autojump() {
+    if ! command_exists autojump; then
+        print_status "Installing autojump..."
+        sudo apt-get update
+        sudo apt-get install -y autojump
+        print_success "autojump installed successfully"
+    else
+        print_success "autojump is already installed"
+    fi
+}
+
+# Function to install peco if not installed
+install_peco() {
+    if ! command_exists peco; then
+        print_status "Installing peco..."
+        # Download and install peco
+        local version="0.5.11"
+        local arch=$(uname -m)
+        local platform="linux"
+        
+        if [ "$arch" = "x86_64" ]; then
+            arch="amd64"
+        elif [ "$arch" = "aarch64" ]; then
+            arch="arm64"
+        fi
+        
+        wget "https://github.com/peco/peco/releases/download/v${version}/peco-${platform}-${arch}-${version}.tar.gz" -O /tmp/peco.tar.gz
+        tar -xzf /tmp/peco.tar.gz -C /tmp
+        sudo mv /tmp/peco-${platform}-${arch}-${version}/peco /usr/local/bin/
+        rm -rf /tmp/peco.tar.gz /tmp/peco-${platform}-${arch}-${version}
+        print_success "peco installed successfully"
+    else
+        print_success "peco is already installed"
+    fi
+}
+
+# Function to install ripgrep if not installed
+install_ripgrep() {
+    if ! command_exists rg; then
+        print_status "Installing ripgrep..."
+        sudo apt-get update
+        sudo apt-get install -y ripgrep
+        print_success "ripgrep installed successfully"
+    else
+        print_success "ripgrep is already installed"
+    fi
+}
+
+# Function to install ag (the silver searcher) if not installed
+install_ag() {
+    if ! command_exists ag; then
+        print_status "Installing ag (the silver searcher)..."
+        sudo apt-get update
+        sudo apt-get install -y silversearcher-ag
+        print_success "ag installed successfully"
+    else
+        print_success "ag is already installed"
+    fi
+}
+
+# Function to check required tools
+check_required_tools() {
+    print_status "Checking required tools..."
     
-    # Create .zshrc if it doesn't exist
-    if [ ! -f "$HOME/.zshrc" ]; then
-        touch "$HOME/.zshrc"
+    local required_tools=(
+        zsh
+        git
+    )
+    
+    local missing_tools=()
+    
+    for tool in "${required_tools[@]}"; do
+        if ! command_exists "$tool"; then
+            missing_tools+=("$tool")
+            print_warning "$tool is not installed"
+        else
+            print_success "$tool is installed"
+        fi
+    done
+    
+    if [ ${#missing_tools[@]} -ne 0 ]; then
+        print_status "Installing missing required tools..."
+        for tool in "${missing_tools[@]}"; do
+            ensure_package "$tool"
+        done
     fi
+}
+
+# Function to setup zsh configuration
+setup_zsh_config() {
+    print_status "Setting up zsh configuration..."
+    
+    # Install Oh My Zsh
+    install_oh_my_zsh
+    
+    # Install Powerlevel10k theme
+    install_powerlevel10k
+    
+    # Install autojump
+    install_autojump
+    
+    # Install peco
+    install_peco
+    
+    # Install ripgrep
+    install_ripgrep
+    
+    # Install ag
+    install_ag
     
     # Backup existing .zshrc
     if [ -f "$HOME/.zshrc" ]; then
@@ -128,8 +209,85 @@ main() {
         print_success "Zsh is already the default shell"
     fi
     
-    print_success "Linux Initial Configuration Setup completed successfully!"
+    print_success "Zsh configuration setup completed successfully!"
     print_status "Please restart your terminal or run 'source ~/.zshrc' to apply the changes."
+}
+
+# Function to show help
+show_help() {
+    echo "Linux Initial Configuration Setup Script"
+    echo ""
+    echo "Usage: $0 [OPTIONS]"
+    echo ""
+    echo "Options:"
+    echo "  -h, --help     Show this help message"
+    echo "  -c, --check    Check required tools only"
+    echo ""
+    echo "This script will:"
+    echo "  - Check for required tools (zsh, git)"
+    echo "  - Install Oh My Zsh"
+    echo "  - Install Powerlevel10k theme"
+    echo "  - Install autojump"
+    echo "  - Install peco"
+    echo "  - Install ripgrep"
+    echo "  - Install ag (the silver searcher)"
+    echo "  - Set up custom .zshrc configuration"
+    echo "  - Set zsh as default shell"
+    echo ""
+}
+
+# Main function
+main() {
+    local check_only=false
+    
+    # Parse command line arguments
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -h|--help)
+                show_help
+                exit 0
+                ;;
+            -c|--check)
+                check_only=true
+                shift
+                ;;
+            *)
+                print_error "Unknown option: $1"
+                show_help
+                exit 1
+                ;;
+        esac
+    done
+    
+    # Check if running as root
+    if [[ $EUID -eq 0 ]]; then
+        print_error "This script should not be run as root. Please run as a regular user."
+        exit 1
+    fi
+    
+    # Check if Ubuntu/Debian
+    if [[ ! -f /etc/ubuntu-release && ! -f /etc/debian_version ]]; then
+        print_warning "This script is designed for Ubuntu/Debian systems. Some features may not work."
+    fi
+    
+    print_status "Starting Linux Initial Configuration Setup..."
+    print_status "This script will check for required tools and set up zsh configuration."
+    
+    # Update package lists
+    print_status "Updating package lists..."
+    sudo apt-get update
+    
+    if [ "$check_only" = true ]; then
+        check_required_tools
+    else
+        check_required_tools
+        setup_zsh_config
+    fi
+    
+    if [ "$check_only" = false ]; then
+        print_success "Linux Initial Configuration Setup completed successfully!"
+        print_status "Please restart your terminal or run 'source ~/.zshrc' to apply the changes."
+    fi
 }
 
 # Run main function
