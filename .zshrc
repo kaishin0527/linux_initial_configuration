@@ -354,8 +354,6 @@ function pe() {
   ag "$@" . | peco --exec 'awk -F : '"'"'{print "+" $2 " " $1}'"'"' | xargs less -N '
 }
 
-[[ -s "$HOME/.local/share/marker/marker.sh" ]] && source "$HOME/.local/share/marker/marker.sh"
-
 function peco-kill() {
   for pid in `ps aux | peco | awk '{ print $2 }'`
   do

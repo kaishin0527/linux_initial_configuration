@@ -118,13 +118,6 @@ main() {
     # Create necessary directories
     print_status "Creating necessary directories..."
     mkdir -p "$HOME/.zsh/functions/Completion"
-    mkdir -p "$HOME/.local/share/marker"
-    
-    # Install marker if not installed
-    if [ ! -f "$HOME/.local/share/marker/marker.sh" ]; then
-        print_status "Installing marker..."
-        bash <(curl -s https://raw.githubusercontent.com/pindexis/marker/master/install) -y
-    fi
     
     # Install ghq if not installed
     if ! command_exists ghq; then
