@@ -119,12 +119,6 @@ main() {
     print_status "Creating necessary directories..."
     mkdir -p "$HOME/.zsh/functions/Completion"
     
-    # Install ghq if not installed
-    if ! command_exists ghq; then
-        print_status "Installing ghq..."
-        go install github.com/x-motemen/ghq@latest
-    fi
-    
     # Set zsh as default shell
     if [ "$SHELL" != "$(which zsh)" ]; then
         print_status "Setting zsh as default shell..."
