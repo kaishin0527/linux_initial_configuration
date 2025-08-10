@@ -5,6 +5,7 @@
 # This script sets up a new Linux environment with zsh, peco, autojump, and custom configuration
 
 set -e
+set -u
 
 # Colors for output
 RED='\033[0;31m'
@@ -63,27 +64,7 @@ main() {
     
     # Install essential packages
     print_status "Installing essential packages..."
-    ESSENTIAL_PACKAGES=(
-        zsh
-        curl
-        wget
-        git
-        build-essential
-        autojump
-        peco
-        silversearcher-ag
-        less
-        vim
-        tmux
-        htop
-        tree
-        unzip
-        tar
-        gzip
-        ripgrep
-    )
-    
-    for package in "${ESSENTIAL_PACKAGES[@]}"; do
+    for package in zsh curl wget git build-essential autojump peco silversearcher-ag less vim tmux htop tree unzip tar gzip ripgrep; do
         install_package "$package"
     done
     
@@ -137,13 +118,6 @@ main() {
     # Create necessary directories
     print_status "Creating necessary directories..."
     mkdir -p "$HOME/.zsh/functions/Completion"
-    mkdir -p "$HOME/.local/share/marker"
-    
-    # Install marker if not installed
-    if [ ! -f "$HOME/.local/share/marker/marker.sh" ]; then
-        print_status "Installing marker..."
-        bash <(curl -s https://raw.githubusercontent.com/pindexis/marker/master/install) -y
-    fi
     
     # Install ghq if not installed
     if ! command_exists ghq; then
