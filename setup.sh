@@ -1,5 +1,5 @@
 
-#!/bin/bash
+#!/bin/sh
 
 # Linux Initial Configuration Setup Script
 # This script checks for required tools and sets up zsh configuration
@@ -50,28 +50,6 @@ ensure_package() {
         print_success "$package installed successfully"
     else
         print_success "$package is already installed"
-    fi
-}
-
-# Function to install Oh My Zsh if not installed
-install_oh_my_zsh() {
-    if [ ! -d "$HOME/.oh-my-zsh" ]; then
-        print_status "Installing Oh My Zsh..."
-        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-        print_success "Oh My Zsh installed successfully"
-    else
-        print_success "Oh My Zsh is already installed"
-    fi
-}
-
-# Function to install Powerlevel10k theme
-install_powerlevel10k() {
-    if [ ! -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k" ]; then
-        print_status "Installing Powerlevel10k theme..."
-        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k
-        print_success "Powerlevel10k theme installed successfully"
-    else
-        print_success "Powerlevel10k theme is already installed"
     fi
 }
 
@@ -140,25 +118,21 @@ install_ag() {
 check_required_tools() {
     print_status "Checking required tools..."
     
-    local required_tools=(
-        zsh
-        git
-    )
+    required_tools="zsh git"
+    missing_tools=""
     
-    local missing_tools=()
-    
-    for tool in "${required_tools[@]}"; do
+    for tool in $required_tools; do
         if ! command_exists "$tool"; then
-            missing_tools+=("$tool")
+            missing_tools="$missing_tools $tool"
             print_warning "$tool is not installed"
         else
             print_success "$tool is installed"
         fi
     done
     
-    if [ ${#missing_tools[@]} -ne 0 ]; then
+    if [ -n "$missing_tools" ]; then
         print_status "Installing missing required tools..."
-        for tool in "${missing_tools[@]}"; do
+        for tool in $missing_tools; do
             ensure_package "$tool"
         done
     fi
@@ -167,12 +141,6 @@ check_required_tools() {
 # Function to setup zsh configuration
 setup_zsh_config() {
     print_status "Setting up zsh configuration..."
-    
-    # Install Oh My Zsh
-    install_oh_my_zsh
-    
-    # Install Powerlevel10k theme
-    install_powerlevel10k
     
     # Install autojump
     install_autojump
@@ -238,10 +206,10 @@ show_help() {
 
 # Main function
 main() {
-    local check_only=false
+    check_only=false
     
     # Parse command line arguments
-    while [[ $# -gt 0 ]]; do
+    while [ $# -gt 0 ]; do
         case $1 in
             -h|--help)
                 show_help
@@ -260,7 +228,7 @@ main() {
     done
     
     # Check if Ubuntu/Debian
-    if [[ ! -f /etc/ubuntu-release && ! -f /etc/debian_version ]]; then
+    if [ ! -f /etc/ubuntu-release ] && [ ! -f /etc/debian_version ]; then
         print_warning "This script is designed for Ubuntu/Debian systems. Some features may not work."
     fi
     
@@ -276,9 +244,6 @@ main() {
     else
         check_required_tools
         setup_zsh_config
-    fi
-    
-    if [ "$check_only" = false ]; then
         print_success "Linux Initial Configuration Setup completed successfully!"
         print_status "Please restart your terminal or run 'source ~/.zshrc' to apply the changes."
     fi
