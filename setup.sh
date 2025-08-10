@@ -259,12 +259,6 @@ main() {
         esac
     done
     
-    # Check if running as root
-    if [[ $EUID -eq 0 ]]; then
-        print_error "This script should not be run as root. Please run as a regular user."
-        exit 1
-    fi
-    
     # Check if Ubuntu/Debian
     if [[ ! -f /etc/ubuntu-release && ! -f /etc/debian_version ]]; then
         print_warning "This script is designed for Ubuntu/Debian systems. Some features may not work."
