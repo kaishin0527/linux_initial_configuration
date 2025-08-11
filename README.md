@@ -2,16 +2,25 @@
 
 # Linux Initial Configuration
 
-This repository contains a setup script and configuration files to quickly set up a new Linux environment with zsh, peco, autojump, and other useful tools.
+This repository contains a comprehensive setup script and configuration files to quickly set up a new Linux environment with zsh, peco, autojump, and other useful tools.
 
 ## Features
 
+### Core Installation
 - **Zsh Configuration**: Comprehensive `.zshrc` with custom prompts, aliases, and functions
-- **Powerful Plugins**: Includes zsh-autosuggestions, zsh-syntax-highlighting, and zsh-completions
-- **Peco Integration**: Enhanced command history, directory selection, and process management
 - **Autojump**: Smart directory navigation with `j` command
-- **Modern Theme**: Powerlevel10k theme for beautiful terminal prompts
+- **Peco Integration**: Enhanced command history, directory selection, and process management
 - **Essential Tools**: Installs commonly used development and system tools
+
+### Advanced Features
+- **Error Handling**: Robust error handling with detailed logging
+- **Platform Detection**: Supports multiple Linux distributions
+- **Configuration Backup**: Automatic backup of existing configurations
+- **Setup Verification**: Post-installation verification of all tools
+- **Configuration Export/Import**: Backup and restore your setup
+- **Dry Run Mode**: Preview changes before applying them
+- **Uninstall Mode**: Clean removal of all tools and restoration of original config
+- **Testing Framework**: Built-in testing capabilities
 
 ## Prerequisites
 
@@ -39,37 +48,34 @@ chmod +x setup.sh
 ./setup.sh
 ```
 
-### Manual Installation
+### Advanced Usage
 
-If you prefer to install components manually:
+The setup script supports various options for different use cases:
 
-1. Install essential packages:
 ```bash
-sudo apt-get update
-sudo apt-get install -y zsh curl wget git build-essential autojump peco silversearcher-ag less vim tmux htop tree unzip tar gzip ripgrep
-```
+# Check requirements only
+./setup.sh --check
 
-2. Install Oh My Zsh:
-```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-```
+# Preview changes without applying them
+./setup.sh --dry-run
 
-3. Install zsh plugins:
-```bash
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-completions
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k
-```
+# Uninstall all tools and restore original config
+./setup.sh --uninstall
 
-4. Copy the `.zshrc` file:
-```bash
-cp .zshrc ~/.zshrc
-```
+# Export current configuration
+./setup.sh --export-config
 
-5. Set zsh as default shell:
-```bash
-chsh -s $(which zsh)
+# Import configuration from file
+./setup.sh --import-config config.tar.gz
+
+# Run tests
+./setup.sh --test
+
+# Verbose output
+./setup.sh -v
+
+# Show help
+./setup.sh --help
 ```
 
 ## What Gets Installed
@@ -90,20 +96,31 @@ chsh -s $(which zsh)
 - `unzip`, `tar`, `gzip` - Archive tools
 - `ripgrep` - Fast grep alternative
 
-### Zsh Plugins
-- `zsh-autosuggestions` - Auto-suggestions for commands
-- `zsh-syntax-highlighting` - Syntax highlighting
-- `zsh-completions` - Additional completions
-- `powerlevel10k` - Modern prompt theme
+### Zsh Configuration
+- Custom prompts for root and regular users
+- Remote host detection in prompts
+- Auto directory navigation and pushd settings
+- Command history sharing and configuration
+- Advanced completion system
+- Magic abbreviations (G for grep, X for xargs, etc.)
+- File extension associations (txt, html, rb, py, hs, php, c, cpp, java)
+
+### Integration Features
+- Peco integration for history, directory jumping, and process management
+- Autojump integration for fast directory navigation
+- Interactive package installation with `iapt` command
+- Terminal title setting
+- Smart file type associations
 
 ### Key Features
-- **Command History Search**: `Ctrl+R` to search through history
+- **Command History Search**: `Ctrl+R` to search through history with peco
 - **Directory Navigation**: `Ctrl+U` to select directories from history
-- **Autojump Integration**: `j` command for smart directory jumping
-- **Process Management**: `Ctrl+K` to kill processes
-- **Directory Selection**: `Ctrl+T` to select directories
+- **Autojump Integration**: `Ctrl+F` to select directories with autojump
+- **Process Management**: `Ctrl+K` to kill processes with peco
+- **Directory Selection**: `Ctrl+T` to select directories with peco
 - **Package Installation**: `iapt` command to search and install packages
 - **File Management**: Smart file type associations
+- **Code Search**: `pe` command to search code with ag and peco
 
 ## Customization
 
